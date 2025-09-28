@@ -25,7 +25,17 @@ namespace SharedCommon.WorkingItems
         public string Title { get; set; }
         public string Description { get; set; }
         public List<IMessage> Comments { get; set; } // list of comments associated with this task
-        public TaskList ChildTasks { get; set; } // if this task has child tasks, they will be stored here
+        private TaskList _tasks;
+        public TaskList ChildTasks
+        {
+            get => _tasks ??= new TaskList(this); // lazy-init for non-JSON scenarios
+            set
+            {
+                // when deserializing, JSON sets this property; ensure owner is bound
+                _tasks = value ?? new TaskList(this);
+                _tasks._owner = this;
+            }
+        }
         public DateTime DueDate { get; set; }
         public TaskStatus Status { get; set; } // enums when passed to DB are typically stored as ints (0, 1, 2, 3...)
 

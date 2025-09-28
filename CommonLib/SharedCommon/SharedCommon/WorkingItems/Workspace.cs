@@ -10,6 +10,8 @@ namespace SharedCommon.WorkingItems
     public class Workspace : IOwner, ITaskOwner
     {
         public string WorkspaceId { get; set; } // unique identifier for the workspace, we may want to just set this to an Int or use GUIDs but string is ok for now
+        public string Name { get; set; } // name of the workspace
+        public string Description { get; set; } // description of the workspace
         public DateTime CreatedAt { get; set; } // timestamp of when the workspace was created
         public List<IMessage> ChatMessageHistory { get; set; } // list of chat messages associated with this workspace
 
