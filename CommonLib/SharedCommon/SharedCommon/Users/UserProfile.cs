@@ -12,7 +12,7 @@ namespace SharedCommon.Users
         public string Username { get; set; }
         public string UserID { get; set; } // unique identifier for the user, we may want to just set this to an Int or use GUIDs but string is ok for now
         public string Email { get; set; }
-        public string Password { get; set; }
+        public string JwtToken { get; set; } // used for auth, should be retrieved upon login
         public DateTime AccountCreated { get; set; }
 
         [JsonConstructor]
