@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace SharedCommon
+﻿namespace TaskHub.Schema
 {
     public enum MessageType
     {
@@ -17,7 +11,7 @@ namespace SharedCommon
     public interface IMessage
     {
         public string Message { get; set; }
-        public string AuthorUserId { get; set; } // this is the UserId of the profile that wrote/created the message
+        public int AuthorUserId { get; set; } // this is the UserId of the profile that wrote/created the message
         public string AuthorUsername { get; set; } // username associated with the UserId of the author for quick access and visibility
         public DateTime CreatedAt { get; set; } // the timestamp of when the author sent the message
 
@@ -28,6 +22,6 @@ namespace SharedCommon
          and then add the 0/1 as a query filter. Regardless of the approach for the tables, we ultimately can just use the same schema for all message types.
          */
         public MessageType Type { get; set; } // would be either a TaskComment or WorkspaceChatMessage 
-        public string OwnerId { get; set; } // would be either workspace ID or a task ID, depending on the Type (NOT the user profile ID of the author)
+        public int OwnerId { get; set; } // would be either workspace ID or a task ID, depending on the Type (NOT the user profile ID of the author)
     }
 }

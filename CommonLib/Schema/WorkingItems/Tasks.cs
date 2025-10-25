@@ -1,11 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Text.Json.Serialization;
-using System.Threading.Tasks;
+﻿using System.Text.Json.Serialization;
 
-namespace SharedCommon.WorkingItems
+namespace TaskHub.Schema.WorkingItems
 {
     /// <summary>
     /// Represents an association between the status of a task and the task itself.
@@ -21,7 +16,7 @@ namespace SharedCommon.WorkingItems
 
     public class Tasks : IOwner, ITaskOwner
     {
-        public string TaskId { get; set; } // unique identifier for the task, we may want to just set this to an Int or use GUIDs but string is ok for now
+        public int TaskId { get; set; } // unique identifier for the task, optional until persisted
         public string Title { get; set; }
         public string Description { get; set; }
         public List<IMessage> Comments { get; set; } // list of comments associated with this task
@@ -33,7 +28,7 @@ namespace SharedCommon.WorkingItems
             {
                 // when deserializing, JSON sets this property; ensure owner is bound
                 _tasks = value ?? new TaskList(this);
-                _tasks._owner = this;
+                _tasks.Owner = this;
             }
         }
         public DateTime DueDate { get; set; }
@@ -48,10 +43,10 @@ namespace SharedCommon.WorkingItems
         #endregion
 
         #region IOwner Implementation
-        public string OwnerId { get; set; }
-        public string ParentTaskId { get; set; }
-        public string ParentWorkspaceId { get; set; }
-        public string ParentGroupId { get; set; }
+        public int? OwnerId { get; set; }
+        public int? ParentTaskId { get; set; }
+        public int? ParentWorkspaceId { get; set; }
+        public int? ParentGroupId { get; set; }
         #endregion
     }
 }

@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace SharedCommon.WorkingItems
+﻿namespace TaskHub.Schema.WorkingItems
 {
     /// <summary>
     /// This is strictly for Tasks and Workspace to help logically layout parent/child relations.

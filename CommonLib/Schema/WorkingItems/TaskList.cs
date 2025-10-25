@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections;
 
-namespace SharedCommon.WorkingItems
+namespace TaskHub.Schema.WorkingItems
 {
     /// <summary>
     /// Since Tasks have a list of child tasks, we want to enforce some rules on how that list is managed.
@@ -14,36 +11,35 @@ namespace SharedCommon.WorkingItems
     /// </summary>
     public class TaskList : IList<Tasks>
     {
-        public List<Tasks> _items = new();
-        public IOwner? _owner { get; set; }
+        public List<Tasks> Items = new();
+        public IOwner? Owner { get; set; }
 
         public TaskList() { }
 
-        // Accept any IOwner (Workspace, Tasks, etc.). Caller can pass a Tasks instance when creating
-        // a TaskList that belongs to a Tasks parent.
+
         public TaskList(IOwner owner)
         {
-            _owner = owner ?? throw new ArgumentNullException(nameof(owner));
+            Owner = owner ?? throw new ArgumentNullException(nameof(owner));
         }
 
         public Tasks this[int index]
         {
-            get => _items[index];
+            get => Items[index];
             set
             {
                 if (value is null) throw new ArgumentNullException(nameof(value));
                 EnsureOwnerCanHaveChildren();
                 EnsureNoSubChildren(value);
 
-                var previous = _items[index];
+                var previous = Items[index];
                 UnsetChildFlags(previous);
 
                 SetChildFlags(value);
-                _items[index] = value;
+                Items[index] = value;
             }
         }
 
-        public int Count => _items.Count;
+        public int Count => Items.Count;
 
         public bool IsReadOnly => false;
 
@@ -54,24 +50,24 @@ namespace SharedCommon.WorkingItems
             EnsureNoSubChildren(item);
 
             SetChildFlags(item);
-            _items.Add(item);
+            Items.Add(item);
         }
 
         public void Clear()
         {
-            foreach (var child in _items)
+            foreach (var child in Items)
                 UnsetChildFlags(child);
 
-            _items.Clear();
+            Items.Clear();
         }
 
-        public bool Contains(Tasks item) => _items.Contains(item);
+        public bool Contains(Tasks item) => Items.Contains(item);
 
-        public void CopyTo(Tasks[] array, int arrayIndex) => _items.CopyTo(array, arrayIndex);
+        public void CopyTo(Tasks[] array, int arrayIndex) => Items.CopyTo(array, arrayIndex);
 
-        public IEnumerator<Tasks> GetEnumerator() => _items.GetEnumerator();
+        public IEnumerator<Tasks> GetEnumerator() => Items.GetEnumerator();
 
-        public int IndexOf(Tasks item) => _items.IndexOf(item);
+        public int IndexOf(Tasks item) => Items.IndexOf(item);
 
         public void Insert(int index, Tasks item)
         {
@@ -80,13 +76,13 @@ namespace SharedCommon.WorkingItems
             EnsureNoSubChildren(item);
 
             SetChildFlags(item);
-            _items.Insert(index, item);
+            Items.Insert(index, item);
         }
 
         public bool Remove(Tasks item)
         {
             if (item is null) return false;
-            var removed = _items.Remove(item);
+            var removed = Items.Remove(item);
             if (removed)
                 UnsetChildFlags(item);
             return removed;
@@ -94,9 +90,9 @@ namespace SharedCommon.WorkingItems
 
         public void RemoveAt(int index)
         {
-            var item = _items[index];
+            var item = Items[index];
             UnsetChildFlags(item);
-            _items.RemoveAt(index);
+            Items.RemoveAt(index);
         }
 
         IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
@@ -104,7 +100,7 @@ namespace SharedCommon.WorkingItems
         // If the owner implements ITaskOwner and it is marked as a child, it cannot have children.
         private void EnsureOwnerCanHaveChildren()
         {
-            if (_owner is ITaskOwner taskOwner && taskOwner.IsChildTask)
+            if (Owner is ITaskOwner taskOwner && taskOwner.IsChildTask)
                 throw new InvalidOperationException("The owner task is itself a child task and cannot have child tasks.");
         }
 
@@ -119,7 +115,7 @@ namespace SharedCommon.WorkingItems
         // If owner is a Workspace (or any IOwner that is not Tasks) the added item is kept as top-level.
         private void SetChildFlags(Tasks child)
         {
-            if (_owner is Tasks parentTask)
+            if (Owner is Tasks parentTask)
             {
                 // owner is a Tasks => child relationship
                 child.IsChildTask = true;
@@ -136,7 +132,7 @@ namespace SharedCommon.WorkingItems
         // Only unset flags if they point to this owner (avoid clobbering state set elsewhere).
         private void UnsetChildFlags(Tasks child)
         {
-            if (_owner is Tasks parentTask && child.ParentTaskId == parentTask.TaskId)
+            if (Owner is Tasks parentTask && child.ParentTaskId == parentTask.TaskId)
             {
                 child.ParentTaskId = null;
                 child.IsChildTask = false;

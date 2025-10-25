@@ -1,8 +1,9 @@
+# Synopsis
+
 The purpose of this SharedCommon library is to setup some kind of starting point for out initial object layouts and schema, based on previous technical discussions. This library can be pulled in by FE/BE to have a common uniformed set of classes to work with, and be viewed by other team members to have an understanding of how class schema is setup.
 
-This is by no means 'set in stone' and is subject to change.
+![#file:data_schema_uml.png](./data_schema_uml.png)
 
-# Synopsis
 
 ## IMessage
 
@@ -21,7 +22,7 @@ This is a simple interface that only applies to tasks and workspaces - basically
 ## Tasks
 
 The Tasks object implements the following:
-   * string named TaskId
+   * int named TaskId
    * string named Title
    * string named Description
    * List<IMessage> named Comments
@@ -37,7 +38,7 @@ The TaskList is a custom IList implementation that tracks the IOwner when create
 ## Workspace
 
 The Workspace object implements the following:
-   * string named WorkspaceId
+   * int named WorkspaceId
    * string named Name
    * string named Description
    * DateTime named CreatedAt
@@ -48,10 +49,22 @@ The Workspace object implements the following:
 ## Group
 
 The Group object implements the following:
-   * string named GroupId
+   * int named GroupId
    * string named Name
    * string named Description
-   * List<string> named MemberUserIds
-   * List<string> named WorkspaceIds
+   * List<int> named MemberUserIds
+   * List<int> named WorkspaceIds
    * DateTime named CreatedAt
    * all the IOwner implementations (since a Group is sort of a 'higher level' object, this would only ever need to use the OwnerId field to associated the user Id of the user profile who 'owns' the group)
+
+## SchemaMapping
+
+The `SchemaMapping` class (see `Schema/SchemaMapping.cs`) provides a single and centralized place to declare and manage all API endpoints, their corresponding stored procedure names, parameter schemas, and any associated DTOs in the CommonLib. In the backend project it is setup via a `global using static` so the information is available throughout the codebase with a single declaration.
+
+Synopsis of what `SchemaMapping` outlines:
+   * A single list of API definitions that describe endpoint routes, HTTP methods, the stored procedure they map to, the CLR return type, and whether the endpoint returns a collection.
+   * Enum controlled identifiers (`ApiEndpoints` and `StoredProcedures`) so code can reference endpoints and procedures by name rather than hard-coded strings.
+   * Dictionaries that make it trivial to look up route templates, HTTP method, return type, and whether the result is a collection for any endpoint.
+   * A typed description of stored procedure parameters so call sites can check parameters consistently.
+
+This arrangement is meant to keep API routing, databasee procedure names, and schema types unified in one place and reduces  errors and maintenance.
